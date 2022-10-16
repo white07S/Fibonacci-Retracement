@@ -1,4 +1,5 @@
 
+[![Python application](https://github.com/white07S/Fibonacci-Retracement/actions/workflows/python-app.yml/badge.svg)](https://github.com/white07S/Fibonacci-Retracement/actions/workflows/python-app.yml)
 # Fibonacci-Retracement
 ==============================
 

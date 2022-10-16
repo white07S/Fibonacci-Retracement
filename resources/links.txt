@@ -8,6 +8,7 @@ https://g.co/kgs/qADEZ6
 
 https://www.investopedia.com/trading/support-and-resistance-basics/
 
+https://sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/BS704_Survival/BS704_Survival6.html
 
 [Libraries]
 
@@ -17,3 +18,8 @@ https://mrjbq7.github.io/ta-lib/doc_index.html
 
 https://pytorch.org/
 
+https://square.github.io/pysurvival/
+
+[NOTE]: https://square.github.io/pysurvival/tutorials/credit_risk.html   Try to dig into this so that you can get better understanding how it can be used in financial modelling 
+
+[NOTE]: In pysurvival module there are different models but try to get some understanding from these 3  Cox Proportional Hazard model, the Neural Multi-Task Logistic Regression and Random Survival Forest 
