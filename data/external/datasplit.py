@@ -4,6 +4,9 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
+# start - always 09:30
+# end - always 16:00 => TODO - alter 1d data to have 16:00 time
+
 # NOTE - initial commit of the repo - 04.10.2022 - was chosen to be the end for train
 #   that is, the 10y worth of data is pulled wrt. the above date
 end_train = datetime(2022, 10, 4)
@@ -28,27 +31,31 @@ def pull_data_split(ticker: str, save_data: bool = False) -> dict:
         return pd.concat(dataframes).drop_duplicates().reset_index(drop=True)
 
     # note - naming convention of yfinance suck.
-    data_1d = yd.get_ticker_data(ticker, '1d', start_1d, end_train).rename(columns={'Date': 'datetime'})
-    data_1h = yd.get_ticker_data(ticker, '1h', start_1h, end_train).rename(columns={'index': 'datetime'})
+    data_1d = yd.get_ticker_data(ticker, '1d', start_1d, start_1h).rename(columns={'Date': 'datetime'})
+    data_1h = yd.get_ticker_data(ticker, '1h', start_1h, start_15min).rename(columns={'index': 'datetime'})
     data_15min = yd.get_ticker_data(ticker, '15m', start_15min, end_train).rename(columns={'Datetime': 'datetime'})
     # merging
     # FIXME - handle duplicates (1d has 00:00:00 time, so no overlap with 1h or 15min)
-    data_1d_1h = merge_data([data_1d, data_1h])
-    data_1d_15min = merge_data([data_1d, data_15min])
+    # data_1d_1h = pd.concat([data_1d, data_1h, data_15min]).reset_index(drop=True)
+    data_combined = pd.concat([data_1d, data_1h, data_15min]).reset_index(drop=True)
+    # data_1d_15min = merge_data([data_1d, data_15min])
 
     if save_data:
         data_1d.to_csv(f'{ticker}-1d.csv')
         data_1h.to_csv(f'{ticker}-1h.csv')
         data_15min.to_csv(f'{ticker}-15min.csv')
-        data_1d_1h.to_csv(f'{ticker}-1d_1h.csv')
-        data_1d_15min.to_csv(f'{ticker}-1d_15min.csv')
+
+        data_combined.to_csv(f'{ticker}-combined.csv')
+        # data_1d_1h.to_csv(f'{ticker}-1d_1h.csv')
+        # data_1d_15min.to_csv(f'{ticker}-1d_15min.csv')
 
     return {
         'data_1d': data_1d,
         'data_1h': data_1h,
         'data_15min': data_15min,
-        'data_1d_1h': data_1d_1h,
-        'data_1d_15min': data_1d_15min
+        'data_combined': data_combined
+        # 'data_1d_1h': data_1d_1h,
+        # 'data_1d_15min': data_1d_15min
         # TODO - do we need other dataframes?
     }
 
