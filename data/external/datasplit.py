@@ -4,9 +4,6 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
-# start - always 09:30
-# end - always 16:00 => TODO - alter 1d data to have 16:00 time
-
 # NOTE - initial commit of the repo - 04.10.2022 - was chosen to be the end for train
 #   that is, the 10y worth of data is pulled wrt. the above date
 end_train = datetime(2022, 10, 4)
@@ -16,7 +13,7 @@ start_1h = end_train + relativedelta(months=-6)  # 30min has the same restrictio
 start_15min = end_train + relativedelta(months=-1)  # up to 60 days of 15min -> could go for 1 month
 
 
-def pull_data_split(ticker: str, save_data: bool = False) -> dict:
+def pull_data_split(ticker: str, save_data: bool = False) -> pd.DataFrame:
     """
     Pulls the data in our data split format for a given stock
     - 10y worth of 1d interval data
@@ -24,40 +21,17 @@ def pull_data_split(ticker: str, save_data: bool = False) -> dict:
     - 1m worth of 15min interval data
     @param ticker: ticker of the stock
     @param save_data: whether the downloaded data should be stored or not; False by default
-    @return: dict of dataframes in the data split format
+    @return: dataframe containing the combined data
     """
-    def merge_data(dataframes: list):
-        # pd.merge(data_1d, data_1h, how='outer') TODO - may use merge instead
-        return pd.concat(dataframes).drop_duplicates().reset_index(drop=True)
-
     # note - naming convention of yfinance suck.
     data_1d = yd.get_ticker_data(ticker, '1d', start_1d, start_1h).rename(columns={'Date': 'datetime'})
     data_1h = yd.get_ticker_data(ticker, '1h', start_1h, start_15min).rename(columns={'index': 'datetime'})
     data_15min = yd.get_ticker_data(ticker, '15m', start_15min, end_train).rename(columns={'Datetime': 'datetime'})
-    # merging
-    # FIXME - handle duplicates (1d has 00:00:00 time, so no overlap with 1h or 15min)
-    # data_1d_1h = pd.concat([data_1d, data_1h, data_15min]).reset_index(drop=True)
     data_combined = pd.concat([data_1d, data_1h, data_15min]).reset_index(drop=True)
-    # data_1d_15min = merge_data([data_1d, data_15min])
 
     if save_data:
-        data_1d.to_csv(f'{ticker}-1d.csv')
-        data_1h.to_csv(f'{ticker}-1h.csv')
-        data_15min.to_csv(f'{ticker}-15min.csv')
-
         data_combined.to_csv(f'{ticker}-combined.csv')
-        # data_1d_1h.to_csv(f'{ticker}-1d_1h.csv')
-        # data_1d_15min.to_csv(f'{ticker}-1d_15min.csv')
-
-    return {
-        'data_1d': data_1d,
-        'data_1h': data_1h,
-        'data_15min': data_15min,
-        'data_combined': data_combined
-        # 'data_1d_1h': data_1d_1h,
-        # 'data_1d_15min': data_1d_15min
-        # TODO - do we need other dataframes?
-    }
+    return data_combined
 
 
 def pull_all_stocks(save_data: bool = False) -> dict:
@@ -65,6 +39,7 @@ def pull_all_stocks(save_data: bool = False) -> dict:
     Pulls the data split for all the sp500 stocks
     @return: dictionary with all the stocks data split format data
     """
+    # FIXME - yahoofinance - downloading multiple data at once
     return {symbol: pull_data_split(symbol, save_data=save_data) for symbol in yd.get_sp500_tickers()}
 
 
