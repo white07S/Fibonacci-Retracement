@@ -5,6 +5,10 @@ import yahoo_fin.stock_info as si
 from datetime import datetime
 
 
+def get_sp500_tickers() -> list:
+    return si.tickers_sp500()
+
+
 def get_sp500_list():
     """
     Return a Python list containing all the tickers from SP500
