@@ -334,3 +334,12 @@ def calc_support_resistance(h, extmethod = METHOD_NUMDIFF, method=METHOD_NSQURED
             pmax, maxtrend, maxwindows = calc_all(extremaIdxs if hmin is None else extremaIdxs[1], hmax, False)
             if hmin is None: return (extremaIdxs, pmax, maxtrend, maxwindows)
     return (extremaIdxs[0], pmin, mintrend, minwindows), (extremaIdxs[1], pmax, maxtrend, maxwindows)
+
+
+def test_code():
+    data = [0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0]
+    data = [float(x) for x in data]
+    result = (([6, 12, 18], [0.0, 0.0], [([6, 12, 18], (0.0, 0.0, 0.0, 0.0, 0.0, 0.0))], [[([6, 12, 18], (0.0, 0.0, 0.0, 0.0, 0.0, 0.0))]]), ([3, 9, 15, 21], [0.0, 3.0], [([3, 9, 15, 21], (0.0, 3.0, 0.0, 0.0, 0.0, 0.0))], [[([3, 9, 15, 21], (0.0, 3.0, 0.0, 0.0, 0.0, 0.0))]]))
+    assert result == calc_support_resistance(data, extmethod=METHOD_NAIVE)
+    assert result == calc_support_resistance(data, extmethod=METHOD_NAIVECONSEC)
+    assert result == calc_support_resistance(data)
