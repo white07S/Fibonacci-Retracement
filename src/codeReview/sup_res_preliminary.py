@@ -445,6 +445,7 @@ def test_code():
     assert result == calc_support_resistance(data, extmethod=METHOD_NAIVE)
     assert result == calc_support_resistance(data, extmethod=METHOD_NAIVECONSEC)
     assert result == calc_support_resistance(data)
+    print('all assert passed')
 
 
 if __name__ == '__main__':
