@@ -54,6 +54,7 @@ def get_extrema(h, extmethod=METHOD_NUMDIFF, accuracy=1):
 
             return minFunc, maxFunc, numdiff_extrema
     elif extmethod == METHOD_NUMDIFF:
+        # FIXME - odd accuracy
         dx = 1  # 1 day interval
         d_dx = FinDiff(0, dx, 1, acc=accuracy)  # acc=3 #for 5-point stencil, currenly uses +/-1 day only
         d2_dx2 = FinDiff(0, dx, 2, acc=accuracy)  # acc=3 #for 5-point stencil, currenly uses +/-1 day only
