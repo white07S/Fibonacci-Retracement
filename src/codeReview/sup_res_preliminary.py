@@ -437,15 +437,42 @@ def calc_support_resistance(
 
 
 def test_code():
+    # TODO - more mock objects and their results
     data = [0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0]
     data = [float(x) for x in data]
     result = (([6, 12, 18], [0.0, 0.0], [([6, 12, 18], (0.0, 0.0, 0.0, 0.0, 0.0, 0.0))],
                [[([6, 12, 18], (0.0, 0.0, 0.0, 0.0, 0.0, 0.0))]]), (
               [3, 9, 15, 21], [0.0, 3.0], [([3, 9, 15, 21], (0.0, 3.0, 0.0, 0.0, 0.0, 0.0))],
               [[([3, 9, 15, 21], (0.0, 3.0, 0.0, 0.0, 0.0, 0.0))]]))
-    assert result == calc_support_resistance(data, extmethod=METHOD_NAIVE)
-    assert result == calc_support_resistance(data, extmethod=METHOD_NAIVECONSEC)
-    assert result == calc_support_resistance(data)
+    print('Result:')
+    print(result)
+    print()
+
+    print('METHOD_NAIVE:')
+    method_naive = calc_support_resistance(data, extmethod=METHOD_NAIVE)
+    print(method_naive)
+    assert result == method_naive
+    print()
+
+    print('METHOD_NAIVECONSEC:')
+    method_naiveconsec = calc_support_resistance(data, extmethod=METHOD_NAIVECONSEC)
+    print(method_naiveconsec)
+    assert result == method_naiveconsec
+    print()
+
+    # todo - Problematic part
+    print('METHOD_NUMDIFF (default):')
+    method_numdiff = calc_support_resistance(data, accuracy=8)
+    print(method_numdiff)
+    print()
+    for i in range(2, 9, 2):
+        print(f'METHOD_NUMDIFF accuracy={i}:')
+        foo = calc_support_resistance(data, accuracy=i)
+        print(foo)
+        print(result == foo)
+        print()
+    assert result == method_numdiff  # FIXME - default accuracy + documentation
+
     print('all assert passed')
 
 
