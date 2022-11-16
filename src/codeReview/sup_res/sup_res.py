@@ -1,6 +1,5 @@
 from src.codeReview.utils import check_num_alike
 
-
 from src.codeReview.sup_res.methods.methods import *
 from src.codeReview.sup_res.extrema.extrema import *
 from src.codeReview.sup_res.calculation.calculation import calc_all
@@ -10,11 +9,11 @@ class SupResFinder:
     def __init__(self):
         pass
 
-
     def validate_input(self, extmethod, method,
         window, errpct, hough_scale, hough_prob_iter,
         sortError, accuracy):
         """Raise an error if some argument is of an incorrect type"""
+        # TODO - type hints in the respective functions
         if not type(window) is int:
             raise ValueError('window must be of type int')
         if not type(errpct) is float:
@@ -28,9 +27,11 @@ class SupResFinder:
             # h = hist.Close.tolist()
 
     def read_h(self, h):
-        """Check whether `h` is valid data, if it is, then return tuple containing
-        maximal recodrs, minimal records, and length"""
-            # FIXME - duplicates should be separate functions
+        """
+        Check whether `h` is valid data, if it is, then return tuple containing
+        maximal records, minimal records, and length
+        """
+        # FIXME - duplicates should be separate functions
         if type(h) is tuple and len(h) == 2 and (h[0] is None or check_num_alike(h[0])) and (
                 h[1] is None or check_num_alike(h[1])) and (not h[0] is None or not h[1] is None):
             if not h[0] is None and not h[1] is None and len(h[0]) != len(
@@ -52,12 +53,9 @@ class SupResFinder:
         self.validate_input(extmethod, method, window, errpct, hough_scale, hough_prob_iter,sortError, accuracy)
 
         hmin, hmax, len_h = self.read_h(h)
-
         trendmethod = get_method(method)
-
         extremaIdxs = get_extrema(h, extmethod, accuracy)
 
-        
         if hmin is None and hmax is None:
             pmin, mintrend, minwindows = calc_all(extremaIdxs[0], h, True, len_h, errpct, window, trendmethod, sortError)
             pmax, maxtrend, maxwindows = calc_all(extremaIdxs[1], h, False, len_h, errpct, window, trendmethod, sortError)
@@ -72,16 +70,3 @@ class SupResFinder:
                     return (extremaIdxs, pmax, maxtrend, maxwindows)
 
         return (extremaIdxs[0], pmin, mintrend, minwindows), (extremaIdxs[1], pmax, maxtrend, maxwindows)
-
-
-
-
-
-
-
-
-
-
-
-
-

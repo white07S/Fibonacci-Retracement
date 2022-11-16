@@ -5,7 +5,6 @@ from findiff import FinDiff
 
 from src.codeReview.utils import check_num_alike
 
-
 METHOD_NAIVE, METHOD_NAIVECONSEC, METHOD_NUMDIFF = 0, 1, 2
 
 
@@ -82,13 +81,15 @@ def get_extrema(h, extmethod=METHOD_NUMDIFF, accuracy=1):
             return lambda x: momacc[x] > 0, lambda x: momacc[x] < 0, numdiff_extrema
     else:
         raise ValueError('extmethod must be METHOD_NAIVE, METHOD_NAIVECONSEC, METHOD_NUMDIFF')
+
     if hmin is None and hmax is None:
         minFunc, maxFunc, numdiff_extrema = get_minmax(h)
         return numdiff_extrema(minFunc), numdiff_extrema(maxFunc)
-    if not hmin is None:
+    if hmin is not None:
         minf = get_minmax(hmin)
         if hmax is None: return minf[2](minf[0])
-    if not hmax is None:
+    if hmax is not None:
         maxf = get_minmax(hmax)
         if hmin is None: return maxf[2](maxf[1])
+
     return minf[2](minf[0]), maxf[2](maxf[1])

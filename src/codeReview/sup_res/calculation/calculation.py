@@ -2,7 +2,6 @@ import numpy as np
 from src.codeReview.utils import get_bestfit
 
 
-
 def merge_lines(Idxs, trend, h, fltpct):
     for x in Idxs:
         l = []
@@ -24,6 +23,7 @@ def merge_lines(Idxs, trend, h, fltpct):
 
     return list(filter(lambda val: val[0] != [], trend))
 
+
 def measure_area(trendline, isMin, h):
     """
     Reimann sum of line to discrete time series data
@@ -39,8 +39,8 @@ def measure_area(trendline, isMin, h):
     m, b, ser = trendline[1][0], trendline[1][1], h[base:trendline[0][-1] + 1]
 
     return sum(
-        [max(0, (m * (x + base) + b) - y if isMin else y - (m * (x + base) + b)) for x, y in enumerate(ser)]) / len(
-        ser)
+        [max(0, (m * (x + base) + b) - y if isMin else y - (m * (x + base) + b)) for x, y in enumerate(ser)]) / len(ser)
+
 
 def window_results(trends, isMin, h, divide, window, skey):
     windows = [[] for x in range(len(divide) - 1)]
@@ -75,6 +75,7 @@ def window_results(trends, isMin, h, divide, window, skey):
 
 # first find the peaks and troughs
 
+
 def overall_line(idxs, vals):
     if len(idxs) <= 1:
         pm, zme = [np.nan, np.nan], [np.nan]
@@ -82,10 +83,11 @@ def overall_line(idxs, vals):
         p, r = np.polynomial.polynomial.Polynomial.fit(idxs, vals, 1, full=True)  # more numerically stable
         pm, zme = list(reversed(p.convert().coef)), r[0]
         if len(pm) == 1: pm.insert(0, 0.0)
+
     return pm
 
-def calc_all(idxs, h, isMin, len_h, errpct, window, trendmethod, sortError):
 
+def calc_all(idxs, h, isMin, len_h, errpct, window, trendmethod, sortError):
     divide = list(reversed(range(len_h, -window, -window)))
     rem, divide[0] = window - len_h % window, 0
     if rem == window:
@@ -112,4 +114,5 @@ def calc_all(idxs, h, isMin, len_h, errpct, window, trendmethod, sortError):
     mwindows = window_results(mtrend, isMin, h, divide, window, skey)
     pm = overall_line(idxs, [h[x] for x in idxs])
     # print((pmin, pmax, zmne, zmxe))
+
     return pm, mtrend, mwindows

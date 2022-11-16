@@ -21,6 +21,7 @@ def make_image(Idxs, h, min_h, max_h, hough_scale, len_h):
 
     return image, tested_angles, scl, m
 
+
 def find_line_pts(Idxs, x0, y0, x1, y1, h, fltpct):
     s = (y0 - y1) / (x0 - x1)
     i, dnm = y0 - s * x0, np.sqrt(1 + s * s)
@@ -39,6 +40,7 @@ def find_line_pts(Idxs, x0, y0, x1, y1, h, fltpct):
     pts.sort()
 
     return pts, res
+
 
 def hough_points(pts, width, height, thetas):
     diag_len = int(np.ceil(np.sqrt(width * width + height * height)))
