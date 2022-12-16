@@ -8,6 +8,4 @@ def test_calc_test():
     data = [0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0]
     data = [float(x) for x in data]
     result = (([6, 12, 18], [0.0, 0.0], [([6, 12, 18], (0.0, 0.0, 0.0, 0.0, 0.0, 0.0))], [[([6, 12, 18], (0.0, 0.0, 0.0, 0.0, 0.0, 0.0))]]), ([3, 9, 15, 21], [0.0, 3.0], [([3, 9, 15, 21], (0.0, 3.0, 0.0, 0.0, 0.0, 0.0))], [[([3, 9, 15, 21], (0.0, 3.0, 0.0, 0.0, 0.0, 0.0))]]))
-    assert result == calc_support_resistance(data, extmethod=METHOD_NAIVE)
-    assert result == calc_support_resistance(data, extmethod=METHOD_NAIVECONSEC)
-    assert result == calc_support_resistance(data)
+    assert result == calc_support_resistance(data, extmethod=METHOD_NAIVE,accuracy=8)
