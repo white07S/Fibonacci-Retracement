@@ -5,7 +5,7 @@ import pandas as pd
 from findiff import FinDiff
 from skimage.transform import hough_line, hough_line_peaks
 from skimage.transform import probabilistic_hough_line
-
+from src.codeReview import learn_code
 METHOD_NAIVE, METHOD_NAIVECONSEC, METHOD_NUMDIFF = 0, 1, 2
 METHOD_NCUBED, METHOD_NSQUREDLOGN, METHOD_HOUGHPOINTS, METHOD_HOUGHLINES, METHOD_PROBHOUGH = 0, 1, 2, 3, 4
 
@@ -13,6 +13,7 @@ METHOD_NCUBED, METHOD_NSQUREDLOGN, METHOD_HOUGHPOINTS, METHOD_HOUGHLINES, METHOD
 def get_extrema(h, extmethod=METHOD_NUMDIFF, accuracy=1):
     """
     TODO
+    learn_code.fig_linregrs() look for extrema calc
     @param h: 1D array-like object, e.g. List, np.ndarray, pd.Series
     @param extmethod: TODO
     @param accuracy: TODO
@@ -34,6 +35,7 @@ def get_extrema(h, extmethod=METHOD_NUMDIFF, accuracy=1):
     if extmethod == METHOD_NAIVE:
         # naive method
         def get_minmax(h):
+            # look for fig_hough()
             rollwin = pd.Series(h).rolling(window=3, min_periods=1, center=True)
             minFunc = lambda x: len(x) == 3 and x.iloc[0] > x.iloc[1] and x.iloc[2] > x.iloc[1]
             maxFunc = lambda x: len(x) == 3 and x.iloc[0] < x.iloc[1] and x.iloc[2] < x.iloc[1]
@@ -55,6 +57,7 @@ def get_extrema(h, extmethod=METHOD_NUMDIFF, accuracy=1):
             return minFunc, maxFunc, numdiff_extrema
     elif extmethod == METHOD_NUMDIFF:
         # FIXME - odd accuracy
+        # fig_reimann
         dx = 1  # 1 day interval
         d_dx = FinDiff(0, dx, 1, acc=accuracy)  # acc=3 #for 5-point stencil, currenly uses +/-1 day only
         d2_dx2 = FinDiff(0, dx, 2, acc=accuracy)  # acc=3 #for 5-point stencil, currenly uses +/-1 day only
