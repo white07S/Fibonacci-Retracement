@@ -1,5 +1,5 @@
 from utils import datefmt
-from sup_res_preliminary import calc_support_resistance
+from sup_res_preliminary import *
 import yfinance as yf 
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
@@ -8,7 +8,7 @@ import matplotlib.patches as mpatches
 import numpy as np
 
 
-tick = yf.Ticker('^GSPC') 
+tick = yf.Ticker('AMD') 
 hist = tick.history(period="max", rounding=True)
 
 
@@ -75,7 +75,7 @@ def fig_linregrs():
     ax.xaxis.set_major_formatter(ticker.FuncFormatter(datefmt(hist.index)))
     plt.setp(ax.get_xticklabels(), rotation=30, ha='right')
     plt.tight_layout()
-    plt.show()  
+    plt.savefig('LinReg.png')
 
 
 def fig_hough():
@@ -130,7 +130,7 @@ def fig_hough():
         ax.xaxis.set_major_formatter(ticker.FuncFormatter(datefmt(hist.index)))
         plt.setp(ax.get_xticklabels(), rotation=30, ha='right')
         plt.tight_layout()
-        plt.show()
+        plt.savefig('hough.png')
 
 def fig_slopeint():
         plt.clf()
@@ -191,7 +191,7 @@ def fig_slopeint():
             plt.gcf().canvas.draw_idle()
         cid = plt.gcf().canvas.mpl_connect('resize_event', redraw)
         plt.tight_layout()
-        plt.show()
+        plt.savefig('line.png')
 
 
 
@@ -226,9 +226,12 @@ def fig_reimann():
         plt.gca().xaxis.set_major_locator(ticker.MaxNLocator(6))
         plt.gca().xaxis.set_major_formatter(ticker.FuncFormatter(datefmt(hist[-250:].index)))
         plt.setp(plt.gca().get_xticklabels(), rotation=30, ha='right')
-        plt.show()
+        plt.savefig('reimann.png')
 
-fig_slopeint()
-fig_linregrs()
-fig_hough()
-fig_reimann()
+
+
+if __name__ == "__main__":
+    fig_slopeint()
+    fig_linregrs()
+    fig_hough()
+    fig_reimann()

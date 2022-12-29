@@ -1,11 +1,11 @@
-from src.codeReview.utils import check_num_alike
+from utils import check_num_alike
 import numpy as np
 import pandas as pd
 
 from findiff import FinDiff
 from skimage.transform import hough_line, hough_line_peaks
 from skimage.transform import probabilistic_hough_line
-from src.codeReview import learn_code
+import learn_code
 METHOD_NAIVE, METHOD_NAIVECONSEC, METHOD_NUMDIFF = 0, 1, 2
 METHOD_NCUBED, METHOD_NSQUREDLOGN, METHOD_HOUGHPOINTS, METHOD_HOUGHLINES, METHOD_PROBHOUGH = 0, 1, 2, 3, 4
 
