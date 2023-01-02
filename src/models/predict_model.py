@@ -5,6 +5,7 @@ import json
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
 from datetime import datetime
+import time
 
 app = Flask(__name__)
 
@@ -12,6 +13,7 @@ window_size = 20
 skip = 1
 layer_size = 500
 output_size = 3
+
 
 def softmax(z):
     assert len(z.shape) == 2
@@ -22,14 +24,15 @@ def softmax(z):
     div = div[:, np.newaxis]
     return e_x / div
 
-def get_state(parameters, t, window_size = 20):
+
+def get_state(parameters, t, window_size=20):
     outside = []
     d = t - window_size + 1
     for parameter in parameters:
         block = (
-            parameter[d : t + 1]
+            parameter[d: t + 1]
             if d >= 0
-            else -d * [parameter[0]] + parameter[0 : t + 1]
+            else -d * [parameter[0]] + parameter[0: t + 1]
         )
         res = []
         for i in range(window_size - 1):
@@ -41,12 +44,9 @@ def get_state(parameters, t, window_size = 20):
 
 
 class Deep_Evolution_Strategy:
-
     inputs = None
 
-    def __init__(
-        self, weights, reward_function, population_size, sigma, learning_rate
-    ):
+    def __init__(self, weights, reward_function, population_size, sigma, learning_rate):
         self.weights = weights
         self.reward_function = reward_function
         self.population_size = population_size
@@ -62,8 +62,8 @@ class Deep_Evolution_Strategy:
 
     def get_weights(self):
         return self.weights
-    
-    def train(self, epoch = 100, print_every = 1):
+
+    def train(self, epoch=100, print_every=1):
         lasttime = time.time()
         for i in range(epoch):
             population = []
@@ -82,10 +82,10 @@ class Deep_Evolution_Strategy:
             for index, w in enumerate(self.weights):
                 A = np.array([p[index] for p in population])
                 self.weights[index] = (
-                    w
-                    + self.learning_rate
-                    / (self.population_size * self.sigma)
-                    * np.dot(A.T, rewards).T
+                        w
+                        + self.learning_rate
+                        / (self.population_size * self.sigma)
+                        * np.dot(A.T, rewards).T
                 )
             if (i + 1) % print_every == 0:
                 print(
@@ -93,7 +93,8 @@ class Deep_Evolution_Strategy:
                     % (i + 1, self.reward_function(self.weights))
                 )
         print('time taken to train:', time.time() - lasttime, 'seconds')
-        
+
+
 class Model:
     def __init__(self, input_size, layer_size, output_size):
         self.weights = [
@@ -118,7 +119,6 @@ class Model:
 
 
 class Agent:
-
     POPULATION_SIZE = 15
     SIGMA = 0.1
     LEARNING_RATE = 0.03
@@ -177,7 +177,7 @@ class Agent:
             window_size - 1,
             self._inventory,
             self._scaled_capital,
-            timeseries = np.array(self._queue).T.tolist(),
+            timeseries=np.array(self._queue).T.tolist(),
         )
         action, prob = self.act_softmax(state)
         print(prob)
@@ -200,8 +200,8 @@ class Agent:
             )[0, 0]
             try:
                 invest = (
-                    (real_close - scaled_bought_price) / scaled_bought_price
-                ) * 100
+                                 (real_close - scaled_bought_price) / scaled_bought_price
+                         ) * 100
             except:
                 invest = 0
             return {
@@ -248,7 +248,7 @@ class Agent:
         z_inventory = (mean_inventory - self._mean) / self._std
         z_capital = (capital - self._mean) / self._std
         concat_parameters = np.concatenate(
-            [state, [[len_inventory, z_inventory, z_capital]]], axis = 1
+            [state, [[len_inventory, z_inventory, z_capital]]], axis=1
         )
         return concat_parameters
 
@@ -282,7 +282,7 @@ class Agent:
         return invests * 0.7 + score * 0.3
 
     def fit(self, iterations, checkpoint):
-        self.es.train(iterations, print_every = checkpoint)
+        self.es.train(iterations, print_every=checkpoint)
 
     def buy(self):
         initial_money = self._scaled_capital
@@ -319,9 +319,9 @@ class Agent:
                 states_sell.append(t)
                 try:
                     invest = (
-                        (self.real_trend[t] - real_bought_price)
-                        / real_bought_price
-                    ) * 100
+                                     (self.real_trend[t] - real_bought_price)
+                                     / real_bought_price
+                             ) * 100
                 except:
                     invest = 0
                 print(
@@ -333,8 +333,8 @@ class Agent:
             )
 
         invest = (
-            (real_starting_money - real_initial_money) / real_initial_money
-        ) * 100
+                         (real_starting_money - real_initial_money) / real_initial_money
+                 ) * 100
         total_gains = real_starting_money - real_initial_money
         return states_buy, states_sell, total_gains, invest
 
@@ -345,59 +345,63 @@ with open('model.pkl', 'rb') as fopen:
 df = pd.read_csv('TWTR.csv')
 real_trend = df['Close'].tolist()
 parameters = [df['Close'].tolist(), df['Volume'].tolist()]
-minmax = MinMaxScaler(feature_range = (100, 200)).fit(np.array(parameters).T)
+minmax = MinMaxScaler(feature_range=(100, 200)).fit(np.array(parameters).T)
 scaled_parameters = minmax.transform(np.array(parameters).T).T.tolist()
 initial_money = np.max(parameters[0]) * 2
 import matplotlib.pyplot as plt
-agent = Agent(model = model,
-              timeseries = scaled_parameters,
-              skip = skip,
-              initial_money = initial_money,
-              real_trend = real_trend,
-              minmax = minmax)
 
-def plottrades(file,agent):
+agent = Agent(model=model,
+              timeseries=scaled_parameters,
+              skip=skip,
+              initial_money=initial_money,
+              real_trend=real_trend,
+              minmax=minmax)
+
+
+def plottrades(file, agent):
     df = pd.read_csv(file)
-    fig = plt.figure(figsize = (15, 5))
+    fig = plt.figure(figsize=(15, 5))
     plt.plot(df['Close'], color='r', lw=2.)
-    buy,sell,gain,invest = agent.buy()
-    plt.plot(df['Close'], '^', markersize=10, color='m', label = 'buying signal', markevery = buy)
-    plt.plot(df['Close'], 'v', markersize=10, color='k', label = 'selling signal', markevery = sell)
+    buy, sell, gain, invest = agent.buy()
+    plt.plot(df['Close'], '^', markersize=10, color='m', label='buying signal', markevery=buy)
+    plt.plot(df['Close'], 'v', markersize=10, color='k', label='selling signal', markevery=sell)
     plt.title(f'{file} total gains {gain} total investment {invest}')
     plt.savefig(f'{file}.png')
 
-@app.route('/', methods = ['GET'])
+
+@app.route('/', methods=['GET'])
 def hello():
     return jsonify({'status': 'OK'})
 
 
-@app.route('/inventory', methods = ['GET'])
+@app.route('/inventory', methods=['GET'])
 def inventory():
     return jsonify(agent._inventory)
 
 
-@app.route('/queue', methods = ['GET'])
+@app.route('/queue', methods=['GET'])
 def queue():
     return jsonify(agent._queue)
 
 
-@app.route('/balance', methods = ['GET'])
+@app.route('/balance', methods=['GET'])
 def balance():
     return jsonify(agent._capital)
 
 
-@app.route('/realtime', methods = ['GET'])
+@app.route('/realtime', methods=['GET'])
 def trade():
     data = json.loads(request.args.get('data'))
     return jsonify(agent.trade(data))
 
-@app.route('/trade',methods= ['GET'])
+
+@app.route('/trade', methods=['GET'])
 def trade2():
-    plottrades('TWTR.csv',agent)
+    plottrades('TWTR.csv', agent)
     return jsonify(agent.buy())
 
 
-@app.route('/reset', methods = ['GET'])
+@app.route('/reset', methods=['GET'])
 def reset():
     money = json.loads(request.args.get('money'))
     agent.reset_capital(money)
@@ -405,4 +409,4 @@ def reset():
 
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = 8005)
+    app.run(host='0.0.0.0', port=8005)
